@@ -41,23 +41,33 @@ proc `$`*(sdr: SDR): string =
 
 proc minus*(a: SDR, b: SDR): SDR =
   result = new_SDR()
-  for i in 0..<SDR_size:
-    result.writeBit(i, a.readBit(i) and not b.readBit(i))
+  # for i in 0..<SDR_size:
+  #   result.writeBit(i, a.readBit(i) and not b.readBit(i))
+  for i in 1..SDR_blocks:
+    result.bitarray.bitarray[i] = a.bitarray.bitarray[i] and not b.bitarray.bitarray[i]
+
 
 proc union*(a: SDR, b: SDR): SDR =
   result = new_SDR()
-  for i in 0..<SDR_size:
-    result.writeBit(i, a.readBit(i) or b.readBit(i))
+  # for i in 0..<SDR_size:
+  #   result.writeBit(i, a.readBit(i) or b.readBit(i))
+  for i in 1..SDR_blocks:
+    result.bitarray.bitarray[i] = a.bitarray.bitarray[i] or b.bitarray.bitarray[i]
+
 
 proc intersection*(a: SDR, b: SDR): SDR =
   result = new_SDR()
-  for i in 0..<SDR_size:
-    result.writeBit(i, a.readBit(i) and b.readBit(i))
+  # for i in 0..<SDR_size:
+  #   result.writeBit(i, a.readBit(i) and b.readBit(i))
+  for i in 1..SDR_blocks:
+    result.bitarray.bitarray[i] = a.bitarray.bitarray[i] and b.bitarray.bitarray[i]
 
 proc `xor`*(a: SDR, b: SDR): SDR =
   result = new_SDR()
-  for i in 0..<SDR_size:
-    writeBit(result, i, a.readBit(i) xor b.readBit(i))
+  # for i in 0..<SDR_size:
+  #   writeBit(result, i, a.readBit(i) xor b.readBit(i))
+  for i in 1..SDR_blocks:
+    result.bitarray.bitarray[i] = a.bitarray.bitarray[i] xor b.bitarray.bitarray[i]
 
 proc swap*(sdr: SDR, bit_i: int, bit_j: int): void =
   let temp = readBit(sdr, bit_i)
@@ -66,10 +76,13 @@ proc swap*(sdr: SDR, bit_i: int, bit_j: int): void =
 
 proc copy*(sdr: SDR): SDR =
   result = new_SDR()
-  for i in 0..<SDR_size:
-    writeBit(result, i, sdr.readBit(i))
+  # for i in 0..<SDR_size:
+  #   writeBit(result, i, sdr.readBit(i))
+  for i in 1..SDR_blocks:
+    result.bitarray.bitarray[i] = sdr.bitarray.bitarray[i]
 
 proc permuteByRotation*(sdr: SDR, forward: bool): SDR =
+  # XXX unoptimized
   result = new_SDR()
   if forward:
     for i in 0..<SDR_size - 1:
@@ -88,6 +101,7 @@ proc set*(a: SDR, b: SDR): SDR =
   result = union(a, b)
 
 proc permute*(a: SDR, perm: Permutation): SDR =
+  # XXX unoptimized
   result = new_SDR()
   for i in 0..<SDR_size:
     result.writeBit(i, a.readBit(perm[i]))
@@ -114,7 +128,7 @@ proc match*(part: SDR, full: SDR): Truth =
     generalCaseMisses1Bit += int(not part.readBit(i) and full.readBit(i))
 
   let e_total = float(countOneInBoth + generalCaseMisses1Bit)
-  let f_total = float(countOneInBoth) / float(e_total)
+  let f_total = float(countOneInBoth) / e_total
   result = Truth(frequency: f_total, confidence: w2c(e_total))
 
 proc inheritance*(full: SDR, part: SDR): Truth =
