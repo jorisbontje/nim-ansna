@@ -1,15 +1,18 @@
 import bitarray
+import hashes
 import random
 import strutils
 
 import permutation
 import truth
 
-const SDR_size = 64
-
 type
   SDR* = ref object
     bitarray: BitArray
+
+const SDR_size = 2048
+const SDR_blocks = int(SDR_size / (sizeof(BitArrayScalar) * 8))
+const BitArray_header_size = 1
 
 proc new_SDR*(): SDR =
   result = new SDR
@@ -92,12 +95,12 @@ proc permute*(a: SDR, perm: Permutation): SDR =
 proc `tuple`*(a: SDR, b: SDR): SDR =
   result = `xor`(permute(a, permS), permute(b, permP))
 
-proc `tupleGetFirstElement`*(compound: SDR, secondElement: SDR): SDR =
+proc tupleGetFirstElement*(compound: SDR, secondElement: SDR): SDR =
   let bPerm = permute(secondElement, permP)
   let sdrxor = `xor`(bperm, compound)
   result = permute(sdrxor, permS_inv)
 
-proc `tupleGetSecondElement`*(compound: SDR, firstElement: SDR): SDR =
+proc tupleGetSecondElement*(compound: SDR, firstElement: SDR): SDR =
   let aPerm = permute(firstElement, permS)
   let sdrxor = `xor`(aPerm, compound)
   result = permute(sdrxor, permP_inv)
@@ -119,3 +122,14 @@ proc inheritance*(full: SDR, part: SDR): Truth =
 
 proc similarity*(a: SDR, b: SDR): Truth =
   result = intersection(match(a, b), match(b, a))
+
+proc hash*(sdr: SDR): Hash =
+  ### original hashing algorithm:
+  # for i in 0 ..< SDR_blocks:
+  #   for j in 0 ..< SDR_hash_pieces:
+  #     let shift_right = j * 8 * sizeof(SDR_hash)
+  #     result = result or (sdr.bitarray.bitarray[i + BitArray_header_size] shr shift_right)
+  var h: Hash = 0
+  for i in 0 ..< SDR_blocks:
+    h = h !& hash(sdr.bitarray.bitarray[i + BitArray_header_size])
+  result = !$h
