@@ -10,7 +10,8 @@ type
   SDR* = ref object
     bitarray: BitArray
 
-const SDR_size = 2048
+const SDR_size* = 2048
+const SDR_ones* = 5
 const SDR_blocks = int(SDR_size / (sizeof(BitArrayScalar) * 8))
 const BitArray_header_size = 1
 

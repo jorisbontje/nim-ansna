@@ -1,4 +1,5 @@
 import attention
+import encoder
 import permutation
 import sdr
 import truth
