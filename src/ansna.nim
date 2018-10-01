@@ -1,12 +1,23 @@
-import attention
+import options
+
+import concepts
 import encoder
-import inference
-import permutation
+import memory
 import sdr
-import stamp
-import task
-import truth
-import usage
 
 when isMainModule:
-  echo("ANSNA")
+  echo "ANSNA"
+
+  let mySDR = encodeTerm(1)
+  echo $mySDR
+
+  var mem = initMemory()
+  # first test for concept
+  let conceptAName = encodeTerm(2)
+  let conceptA = initConcept(conceptAName)
+  mem.addConcept(conceptA)
+
+  let closest = mem.findClosestConceptByNameExhaustive(conceptAName)
+  echo closest.get()
+
+

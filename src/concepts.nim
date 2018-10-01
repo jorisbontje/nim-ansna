@@ -14,8 +14,8 @@ type
     attention: Attention
     usage: Usage
     # name of the concept like in OpenNARS
-    name: SDR
-    nameHash: Hash
+    name*: SDR
+    nameHash*: Hash
     eventBeliefs: seq[Task]
     preconditionBeliefs: seq[Task]
     postconditionBeliefs: seq[Task]
