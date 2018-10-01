@@ -28,7 +28,7 @@ proc encodeTerm*(number: int): SDR =
   if inputTerms.hasKey(number):
     return inputTerms[number]
 
-  result = new_SDR()
+  result = newSDR()
   for i in 0..<SDR_ones:
     let bit = rand(SDR_size - 1)
     result.writeBit(bit, true)

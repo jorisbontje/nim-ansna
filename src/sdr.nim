@@ -15,7 +15,7 @@ const SDR_ones* = 5
 const SDR_blocks = int(SDR_size / (sizeof(BitArrayScalar) * 8))
 const BitArray_header_size = 1
 
-proc new_SDR*(): SDR =
+proc newSDR*(): SDR =
   result = new SDR
   result.bitarray = create_bitarray(SDR_size)
 
@@ -31,7 +31,7 @@ proc toBits*(sdr: SDR): seq[int] =
       result.add(i)
 
 proc toSDR*(bits: openarray[int]): SDR =
-  result = new_SDR()
+  result = newSDR()
   for i in bits:
     result.writeBit(i, true)
 
@@ -41,7 +41,7 @@ proc `$`*(sdr: SDR): string =
   result.add("]")
 
 proc minus*(a: SDR, b: SDR): SDR =
-  result = new_SDR()
+  result = newSDR()
   # for i in 0..<SDR_size:
   #   result.writeBit(i, a.readBit(i) and not b.readBit(i))
   for i in 1..SDR_blocks:
@@ -49,7 +49,7 @@ proc minus*(a: SDR, b: SDR): SDR =
 
 
 proc union*(a: SDR, b: SDR): SDR =
-  result = new_SDR()
+  result = newSDR()
   # for i in 0..<SDR_size:
   #   result.writeBit(i, a.readBit(i) or b.readBit(i))
   for i in 1..SDR_blocks:
@@ -57,14 +57,14 @@ proc union*(a: SDR, b: SDR): SDR =
 
 
 proc intersection*(a: SDR, b: SDR): SDR =
-  result = new_SDR()
+  result = newSDR()
   # for i in 0..<SDR_size:
   #   result.writeBit(i, a.readBit(i) and b.readBit(i))
   for i in 1..SDR_blocks:
     result.bitarray.bitarray[i] = a.bitarray.bitarray[i] and b.bitarray.bitarray[i]
 
 proc `xor`*(a: SDR, b: SDR): SDR =
-  result = new_SDR()
+  result = newSDR()
   # for i in 0..<SDR_size:
   #   writeBit(result, i, a.readBit(i) xor b.readBit(i))
   for i in 1..SDR_blocks:
@@ -76,7 +76,7 @@ proc swap*(sdr: SDR, bit_i: int, bit_j: int): void =
   sdr.writeBit(bit_j, temp)
 
 proc copy*(sdr: SDR): SDR =
-  result = new_SDR()
+  result = newSDR()
   # for i in 0..<SDR_size:
   #   writeBit(result, i, sdr.readBit(i))
   for i in 1..SDR_blocks:
@@ -84,7 +84,7 @@ proc copy*(sdr: SDR): SDR =
 
 proc permuteByRotation*(sdr: SDR, forward: bool): SDR =
   # XXX unoptimized
-  result = new_SDR()
+  result = newSDR()
   if forward:
     for i in 0..<SDR_size - 1:
       writeBit(result, i + 1, sdr.readBit(i))
@@ -103,7 +103,7 @@ proc set*(a: SDR, b: SDR): SDR =
 
 proc permute*(a: SDR, perm: Permutation): SDR =
   # XXX unoptimized
-  result = new_SDR()
+  result = newSDR()
   for i in 0..<SDR_size:
     result.writeBit(i, a.readBit(perm[i]))
 

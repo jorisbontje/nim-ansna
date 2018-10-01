@@ -6,9 +6,9 @@ type
   Stamp* = object
     evidentalBase: array[STAMP_size, int]
 
-proc reset*(stamp: var Stamp): void =
+proc initStamp*(): Stamp =
   for i in 0..<STAMP_size:
-    stamp.evidentalBase[i] = STAMP_free
+    result.evidentalBase[i] = STAMP_free
 
 proc make*(a: Stamp, b: Stamp): Stamp =
   # TODO implementation
