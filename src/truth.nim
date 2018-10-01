@@ -8,8 +8,8 @@ const EVIDENTAL_HORIZON = 1.0
 proc t_and(a: float, b: float): float =
   result = a * b
 
-proc t_or*(a: float, b: float): float =
-  result = 1 - ((1 - a) * (1 - b))
+# proc t_or(a: float, b: float): float =
+#   result = 1 - ((1 - a) * (1 - b))
 
 proc w2c*(w: float): float =
   result = w / (w + EVIDENTAL_HORIZON)
