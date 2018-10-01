@@ -4,12 +4,12 @@ import truth
 import stamp
 
 type
-  TaskType = enum
-    tGoal, tJudgement
+  TaskType* {.pure.} = enum
+    Goal, Judgement
 
-  Task = object
-    attention: Attention
-    sdr: SDR
-    `type`: TaskType
-    truth: Truth
-    stamp: Stamp
+  Task* = object
+    attention*: Attention
+    sdr*: SDR
+    `type`*: TaskType
+    truth*: Truth
+    stamp*: Stamp

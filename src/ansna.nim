@@ -1,5 +1,6 @@
 import attention
 import encoder
+import inference
 import permutation
 import sdr
 import stamp
