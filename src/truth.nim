@@ -1,9 +1,12 @@
+import math
+
 type
   Truth* = object
     frequency*: float
     confidence*: float
 
 const EVIDENTAL_HORIZON = 1.0
+const TRUTH_PROJECTION_DECAY = 0.99
 
 proc t_and(a: float, b: float): float =
   result = a * b
@@ -45,3 +48,10 @@ proc intersection*(v1: Truth, v2: Truth): Truth =
   let f = t_and(v1.frequency, v2.frequency)
   let c = t_and(v1.confidence, v2.confidence)
   result = Truth(frequency: f, confidence: c)
+
+proc eternalize*(v: Truth): Truth =
+  result = Truth(frequency: v.frequency, confidence: w2c(v.confidence))
+
+proc projection*(v: Truth, originalTime: int64, targetTime: int64): Truth =
+  let difference = abs(targetTime - originalTime)
+  result = Truth(frequency: v.frequency, confidence: pow(TRUTH_PROJECTION_DECAY, float(difference)))

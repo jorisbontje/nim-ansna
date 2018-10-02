@@ -15,6 +15,8 @@ proc initPriQueue*[T](initialSize = 4): PriQueue[T] =
   result.buf.setLen(1)
   result.count = 0
 
+# TODO add eviction
+# using feedback type, attributes: added, evicted, evictedItem
 proc add*[T](q: var PriQueue[T], data: T, pri: int) =
   var n = q.buf.len
   var m = n div 2

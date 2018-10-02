@@ -3,9 +3,9 @@ import options
 import tables
 
 import concepts
+import event
 import priorityqueue
 import sdr
-import task
 
 # XXX unused
 const CONCEPTS_MAX = 10000
@@ -13,7 +13,7 @@ const BUFFER_TASKS_MAX = 64
 
 type
   Memory = PriQueue[Concept]
-  AttentionBuffer = PriQueue[Task]
+  AttentionBuffer = PriQueue[Event]
 
 # var memory: Memory
 # var buffer: AttentionBuffer

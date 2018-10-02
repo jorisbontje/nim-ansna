@@ -1,29 +1,31 @@
 import hashes
 
 import attention
+import event
+import fifo
+import implication
 import sdr
-import task
 import usage
 
 const PRECONDITION_BELIEFS_MAX = 512
 const POSTCONDITION_BELIEFS_MAX = 512
-const EVENT_BELIEFS_MAX = 512
 
 type
   Concept* = object
     attention: Attention
     usage: Usage
-    # name of the concept like in OpenNARS
-    name*: SDR
+    name*: SDR ## name of the concept like in OpenNARS
     nameHash*: Hash
-    eventBeliefs: seq[Task]
-    preconditionBeliefs: seq[Task]
-    postconditionBeliefs: seq[Task]
+    eventBeliefs: FIFO
+    eventGoals: FIFO
+    preconditionBeliefs: seq[Implication]
+    postconditionBeliefs: seq[Implication]
 
 proc initConcept*(name: SDR): Concept =
     result.name = name
-    result.eventBeliefs = newSeq[Task]()
-    result.preconditionBeliefs = newSeq[Task]()
-    result.postconditionBeliefs = newSeq[Task]()
+    result.eventBeliefs = initFIFO()
+    result.eventGoals = initFIFO()
+    result.preconditionBeliefs = newSeq[Implication]()
+    result.postconditionBeliefs = newSeq[Implication]()
     # Generate CRC checksum too:
     result.nameHash = name.hash

@@ -4,12 +4,13 @@ import truth
 import stamp
 
 type
-  TaskType* {.pure.} = enum
-    Goal, Judgement
+  EventType* {.pure.} = enum
+    Goal, Belief
 
-  Task* = object
+  Event* = object
     attention*: Attention
     sdr*: SDR
-    `type`*: TaskType
+    `type`*: EventType
     truth*: Truth
     stamp*: Stamp
+    occurrenceTime*: int64
