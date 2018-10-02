@@ -6,7 +6,7 @@ type
     confidence*: float
 
 const EVIDENTAL_HORIZON = 1.0
-const TRUTH_PROJECTION_DECAY = 0.99
+const PROJECTION_DECAY = 0.99
 
 proc t_and(a: float, b: float): float =
   result = a * b
@@ -54,4 +54,4 @@ proc eternalize*(v: Truth): Truth =
 
 proc projection*(v: Truth, originalTime: int64, targetTime: int64): Truth =
   let difference = abs(targetTime - originalTime)
-  result = Truth(frequency: v.frequency, confidence: pow(TRUTH_PROJECTION_DECAY, float(difference)))
+  result = Truth(frequency: v.frequency, confidence: pow(PROJECTION_DECAY, float(difference)))
