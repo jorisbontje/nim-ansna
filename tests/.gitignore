@@ -1,4 +1,5 @@
 test_encoder
+test_fifo
 test_permutation
 test_sdr
 test_stamp

@@ -3,8 +3,8 @@ import usage
 
 type
   Attention* = object
-    priority: float
-    durability: float
+    priority*: float
+    durability*: float
 
 proc forgetTask*(taskAttention: Attention): Attention =
   result = Attention(priority: taskAttention.priority * taskAttention.durability,

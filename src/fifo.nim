@@ -6,19 +6,21 @@ import inference
 import stamp
 import truth
 
-const FIFO_SIZE = 1000
+const FIFO_MAX_SIZE = 1000
 
 type
   FIFO* = object
-    queue: seq[Event]
+    queue*: seq[Event]
+    maxSize: int
 
-proc initFIFO*(): FIFO =
+proc initFIFO*(maxSize: int = FIFO_MAX_SIZE): FIFO =
   result.queue = newSeq[Event]()
+  result.maxSize = maxSize
 
 proc add*(fifo: var FIFO, event: Event): void =
   # TODO optimize using deques?
   fifo.queue.add(event)
-  if fifo.queue.len > FIFO_SIZE:
+  if fifo.queue.len > fifo.maxSize:
     fifo.queue.delete(0) # O(n)
 
 proc addAndRevise*(fifo: var FIFO, event: Event): Event =

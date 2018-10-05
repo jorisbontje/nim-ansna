@@ -12,7 +12,7 @@ const POSTCONDITION_BELIEFS_MAX = 512
 
 type
   Concept* = object
-    attention: Attention
+    attention*: Attention
     usage: Usage
     sdr*: SDR
     sdrHash*: Hash
