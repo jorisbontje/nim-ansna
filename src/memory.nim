@@ -7,6 +7,7 @@ import concepts
 import event
 import priorityqueue
 import sdr
+import truth
 
 # TODO update with patham9
 
@@ -47,8 +48,7 @@ proc addConcept*(memory: var Memory, koncept: Concept): void =
 proc findClosestConceptByNameExhaustive*(memory: Memory, taskSDR: SDR): Option[Concept] =
   var bestValSoFar = -1.0
   for koncept in memory.items():
-      let curVal = inheritance(taskSDR, koncept.sdr)
-      # XXX which part of the Truth to use?
-      if curVal.frequency > bestValSoFar:
-          bestValSoFar = curVal.frequency
+      let curVal = expectation(inheritance(taskSDR, koncept.sdr))
+      if curVal > bestValSoFar:
+          bestValSoFar = curVal
           result = some(koncept)
