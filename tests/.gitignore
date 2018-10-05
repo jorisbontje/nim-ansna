@@ -1,4 +1,5 @@
 test_encoder
 test_permutation
 test_sdr
+test_stamp
 test_truth
