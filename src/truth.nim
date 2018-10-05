@@ -54,4 +54,4 @@ proc eternalize*(v: Truth): Truth =
 
 proc projection*(v: Truth, originalTime: int64, targetTime: int64): Truth =
   let difference = abs(targetTime - originalTime)
-  result = Truth(frequency: v.frequency, confidence: pow(PROJECTION_DECAY, float(difference)))
+  result = Truth(frequency: v.frequency, confidence: v.confidence * pow(PROJECTION_DECAY, float(difference)))

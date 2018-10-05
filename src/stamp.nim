@@ -6,6 +6,13 @@ type
   Stamp* = object
     evidentalBase*: array[STAMP_size, int]
 
+proc toEvidentalBase*(expected: openarray[int]): array[STAMP_size, int] =
+  assert len(expected) <= STAMP_size
+  for i, value in expected.pairs:
+    result[i] = value
+  for i in len(expected)..<STAMP_size:
+    result[i] = STAMP_free
+
 proc make*(a: Stamp, b: Stamp): Stamp =
   var processStamp1 = true
   var processStamp2 = true

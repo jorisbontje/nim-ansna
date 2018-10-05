@@ -1,6 +1,8 @@
 ## A FIFO-like structure, that only supports put in and overwrites
 ## the oldest task when full
 
+import options
+
 import event
 import inference
 import stamp
@@ -23,9 +25,9 @@ proc add*(fifo: var FIFO, event: Event): void =
   if fifo.queue.len > fifo.maxSize:
     fifo.queue.delete(0) # O(n)
 
-proc addAndRevise*(fifo: var FIFO, event: Event): Event =
+proc addAndRevise*(fifo: var FIFO, event: Event): Option[Event] =
   ## Add an event to the FIFO with potential revision,
-  ## return revised element if revision worked, else event
+  ## return revised element if revision worked, else none
   ## also see https://github.com/patham9/ANSNA/wiki/Event-Revisio
 
   var closest: Event
@@ -43,11 +45,18 @@ proc addAndRevise*(fifo: var FIFO, event: Event): Event =
         closest = potentialClosest
         closest_i = i
 
-  if checkOverlap(event.stamp, closest.stamp):
-    fifo.add(event)
-    return event
+    if checkOverlap(event.stamp, closest.stamp):
+      # overlap happened, we can't revise, so just add the event to FIFO
+      fifo.add(event)
+      return
 
   let revised = eventRevision(closest, event)
+  if revised.truth.confidence < closest.truth.confidence and revised.truth.confidence < event.truth.confidence:
+    # Revision into the middle of both occurrence times leaded to truth lower than the premises, don't revise and add event
+    fifo.add(event)
+    return
+
+  # Else we add the revised one and delete the closest one
   fifo.queue.delete(closest_i) # O(n)
   fifo.add(revised)
-  return revised
+  return some(revised)
