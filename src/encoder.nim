@@ -4,9 +4,9 @@ import tables
 
 import sdr
 
-const SDR_ones = 5
+const TermOnes = 5
 
-var inputTerms = initTable[int, SDR]()
+var inputTerms = initTable[string, SDR]()
 
 # https://www.youtube.com/watch?v=V3Yqtpytif0&list=PL3yXMgtrZmDqhsFQzwUC9V8MeeVOQ7eZ9&index=6
 proc encodeScalar*(n, w, min, max, value: int): SDR =
@@ -24,13 +24,13 @@ proc encodeScalar*(n, w, min, max, value: int): SDR =
     for bitIdx in selectedBucket..<selectedBucket + w:
       result.writeBit(bitIdx, true)
 
-proc encodeTerm*(number: int): SDR =
-  if inputTerms.hasKey(number):
-    return inputTerms[number]
+proc encodeTerm*(term: string): SDR =
+  if inputTerms.hasKey(term):
+    return inputTerms[term]
 
   result = newSDR()
-  for i in 0..<SDR_ones:
+  for i in 0..<TermOnes:
     let bit = rand(SDR_size - 1)
     result.writeBit(bit, true)
 
-    inputTerms[number] = result
+    inputTerms[term] = result

@@ -8,12 +8,12 @@ import sdr
 when isMainModule:
   echo "ANSNA"
 
-  let mySDR = encodeTerm(1)
+  let mySDR = encodeTerm("a")
   echo $mySDR
 
   var mem = initMemory()
   # first test for concept
-  let conceptAName = encodeTerm(2)
+  let conceptAName = encodeTerm("b")
   let conceptA = initConcept(conceptAName)
   mem.addConcept(conceptA)
   echo conceptA
