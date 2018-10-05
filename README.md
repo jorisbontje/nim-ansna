@@ -6,7 +6,7 @@
 
 Join the NARS community:
 [![Riot: #nars](https://img.shields.io/badge/riot-%23nars%3Amatrix.org-orange.svg)](https://riot.im/app/#/room/#nars:matrix.org)
-[![Forum: open-nars](https://img.shields.io/badge/forum-open%2Dnars-orange.svg)](https://groups.google.com/forum/#!forum/open-nars)
+[![Forum: open-nars](https://img.shields.io/badge/forum-open--nars-green.svg)](https://groups.google.com/forum/#!forum/open-nars)
 
 ## Rationale
 NIM port of ANSNA (Adaptive Neuro-Symbolic Network Agent): https://github.com/patham9/ANSNA
