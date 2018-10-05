@@ -3,13 +3,19 @@
 type
   PriElem[T] = tuple
     data: T
-    pri: int
+    pri: float
 
   PriQueue*[T] = object
     buf*: seq[PriElem[T]]
     count*: int
 
+  PreFeedback*[T] = object
+    added*: bool
+    evicted*: bool
+    evictedElem*: PriElem[T]
+
 # first element not used to simplify indices
+# TODO add maxSize
 proc initPriQueue*[T](initialSize = 4): PriQueue[T] =
   result.buf.newSeq(initialSize)
   result.buf.setLen(1)
@@ -17,7 +23,7 @@ proc initPriQueue*[T](initialSize = 4): PriQueue[T] =
 
 # TODO add eviction
 # using feedback type, attributes: added, evicted, evictedItem
-proc add*[T](q: var PriQueue[T], data: T, pri: int) =
+proc add*[T](q: var PriQueue[T], data: T, pri: float) =
   var n = q.buf.len
   var m = n div 2
   q.buf.setLen(n + 1)

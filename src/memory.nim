@@ -27,8 +27,7 @@ proc initMemory*(): Memory =
   result = initPriQueue[Concept]()
 
 proc addConcept*(memory: var Memory, koncept: Concept): void =
-  # TODO what is the priority?
-  memory.add(koncept, 666)
+  memory.add(koncept, koncept.attention.priority)
 
   # voting table
   for i in 0..<SDR_size:
