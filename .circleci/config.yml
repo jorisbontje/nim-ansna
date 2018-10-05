@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    steps:
+      - run: echo 'export PATH=~/.nimble/bin:$PATH' >> $BASH_ENV
+      - checkout
+      # Reuse cached Nim compiler
+      - restore_cache:
+          key: compiler-0002
+      - run:
+          command: |
+            if [ -f ~/.nimble/bin/choosenim ]; then
+              echo "Updating Nim using choosenim"
+              choosenim stable
+            else
+              echo "Installing choosenim and Nim"
+              wget https://raw.githubusercontent.com/dom96/choosenim/master/scripts/choosenim-unix-init.sh
+              sh choosenim-unix-init.sh -y
+            fi
+      - save_cache:
+          key: compiler-0002
+          paths:
+            - ~/.nimble
+            - ~/.choosenim
+      - run:
+          command: |
+            nimble build -y
+          command: |
+            nimble test
