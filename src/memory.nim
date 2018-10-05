@@ -1,5 +1,6 @@
 import hashes
 import options
+import sets
 import tables
 
 import concepts
@@ -9,7 +10,6 @@ import sdr
 
 # TODO update with patham9
 
-# XXX unused
 const CONCEPTS_MAX = 10000
 const EVENTS_MAX = 64
 
@@ -17,32 +17,38 @@ type
   Memory = PriQueue[Concept]
   AttentionBuffer = PriQueue[Event]
 
-# var memory: Memory
-# var buffer: AttentionBuffer
-
 # TODO move into Memory?
-var bitToConcept = initTable[int, seq[Hash]]()
+var bitToConcept = initTable[int, HashSet[Hash]]()
 
 proc initMemory*(): Memory =
-  result = initPriQueue[Concept]()
+  result = initPriQueue[Concept](CONCEPTS_MAX)
 
 proc addConcept*(memory: var Memory, koncept: Concept): void =
-  memory.add(koncept, koncept.attention.priority)
+  let feedback = memory.add(koncept)
 
   # voting table
-  for i in 0..<SDR_size:
-    if koncept.sdr.readBit(i):
-      if i notin bitToConcept:
-        bitToConcept[i] = newSeq[Hash]()
-      bitToConcept[i].add(koncept.sdrHash)
+  if feedback.added:
+    for i in 0..<SDR_size:
+      if koncept.sdr.readBit(i):
+        if i notin bitToConcept:
+          bitToConcept[i] = initSet[Hash]()
+        bitToConcept[i].incl(koncept.sdrHash)
 
-  # TODO eviction
+  # eviction
+  if feedback.evicted:
+    for i in 0..<SDR_size:
+      if feedback.evictedElem.sdr.readBit(i):
+        if i in bitToConcept:
+          bitToConcept[i].excl(koncept.sdrHash)
+
+# TODO
+# proc findClosestConceptByVoting
 
 proc findClosestConceptByNameExhaustive*(memory: Memory, taskSDR: SDR): Option[Concept] =
   var bestValSoFar = -1.0
-  for i in 0..<memory.count:
-      let curVal = inheritance(taskSDR, memory.buf[i + 1].data.sdr)
+  for koncept in memory.items():
+      let curVal = inheritance(taskSDR, koncept.sdr)
       # XXX which part of the Truth to use?
       if curVal.frequency > bestValSoFar:
           bestValSoFar = curVal.frequency
-          result = some(memory.buf[i + 1].data)
+          result = some(koncept)

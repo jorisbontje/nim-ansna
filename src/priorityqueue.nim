@@ -1,60 +1,37 @@
-# From https://github.com/def-/nim-unsorted/blob/master/priorityqueue.nim
+import options
+
+import minmaxheap
 
 type
-  PriElem[T] = tuple
-    data: T
-    pri: float
-
   PriQueue*[T] = object
-    buf*: seq[PriElem[T]]
-    count*: int
+    queue*: MinMaxHeap[T]
+    maxSize*: int
 
-  PreFeedback*[T] = object
+  PriFeedback*[T] = object
     added*: bool
     evicted*: bool
-    evictedElem*: PriElem[T]
+    evictedElem*: T
 
-# first element not used to simplify indices
-# TODO add maxSize
-proc initPriQueue*[T](initialSize = 4): PriQueue[T] =
-  result.buf.newSeq(initialSize)
-  result.buf.setLen(1)
-  result.count = 0
+proc initPriQueue*[T](maxSize: int): PriQueue[T] =
+  result.queue = initMinMaxHeap[T]()
+  result.maxSize = maxSize
 
-# TODO add eviction
-# using feedback type, attributes: added, evicted, evictedItem
-proc add*[T](q: var PriQueue[T], data: T, pri: float) =
-  var n = q.buf.len
-  var m = n div 2
-  q.buf.setLen(n + 1)
+proc add*[T](q: var PriQueue[T], elem: T): PriFeedback[T] =
+  q.queue.push(elem)
+  result.added = true
 
-  # append at end, then up heap
-  while m > 0 and pri < q.buf[m].pri:
-    q.buf[n] = q.buf[m]
-    n = m
-    m = m div 2
+  if q.queue.count > q.maxSize:
+    result.evicted = true
+    result.evictedElem = q.queue.popMin()
+    if result.evictedElem == elem:
+      result.added = false
 
-  q.buf[n] = (data, pri)
-  q.count = q.buf.len - 1
+proc pop*[T](q: var PriQueue[T]): T =
+  result = q.queue.popMax()
 
-proc pop*[T](q: var PriQueue[T]): PriElem[T] =
-  assert q.buf.len > 1
-  result = q.buf[1]
+func count*[T](q: var PriQueue[T]): int =
+  result = q.queue.buf.len
 
-  var qn = q.buf.len - 1
-  var n = 1
-  var m = 2
-  while m < qn:
-    if m + 1 < qn and q.buf[m].pri > q.buf[m+1].pri:
-      inc m
-
-    if q.buf[qn].pri <= q.buf[m].pri:
-      break
-
-    q.buf[n] = q.buf[m]
-    n = m
-    m = m * 2
-
-  q.buf[n] = q.buf[qn]
-  q.buf.setLen(q.buf.len - 1)
-  q.count = q.buf.len - 1
+iterator items*[T](q: PriQueue[T]): T =
+  for i in q.queue.buf.items():
+    yield i

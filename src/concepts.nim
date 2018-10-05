@@ -13,13 +13,13 @@ const POSTCONDITION_BELIEFS_MAX = 512
 type
   Concept* = object
     attention*: Attention
-    usage: Usage
+    usage*: Usage
     sdr*: SDR
     sdrHash*: Hash
-    eventBeliefs: FIFO
-    eventGoals: FIFO
-    preconditionBeliefs: seq[Implication]
-    postconditionBeliefs: seq[Implication]
+    eventBeliefs*: FIFO
+    eventGoals*: FIFO
+    preconditionBeliefs*: seq[Implication]
+    postconditionBeliefs*: seq[Implication]
 
 proc initConcept*(sdr: SDR): Concept =
     result.sdr = sdr
@@ -28,3 +28,8 @@ proc initConcept*(sdr: SDR): Concept =
     result.eventGoals = initFIFO()
     result.preconditionBeliefs = newSeq[Implication]()
     result.postconditionBeliefs = newSeq[Implication]()
+
+proc `<`*(a, b: Concept): bool =
+  result = a.attention.priority < b.attention.priority
+proc `==`*(a, b: Concept): bool =
+  result = a.sdrHash == b.sdrHash

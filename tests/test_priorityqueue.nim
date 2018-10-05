@@ -4,19 +4,19 @@ import priorityqueue
 
 suite "priorityqueue":
 
-  test "add, pop, count":
-    var p = initPriQueue[string]()
+  test "add, pop, count with eviction":
+    var p = initPriQueue[int](maxSize = 3)
 
-    p.add("Clear drains", 3)
-    p.add("Feed cat", 4)
-    p.add("Make tea", 5)
-    p.add("Solve RC tasks", 1)
-    p.add("Tax return", 2)
+    check p.add(3) == PriFeedback[int](added: true, evicted: false)
+    check p.add(2) == PriFeedback[int](added: true, evicted: false)
+    check p.add(1) == PriFeedback[int](added: true, evicted: false)
+    check p.count == 3
 
-    check p.count == 5
-    check p.pop == ("Solve RC tasks", 1.0)
-    check p.pop == ("Tax return", 2.0)
-    check p.pop == ("Clear drains", 3.0)
-    check p.pop == ("Feed cat", 4.0)
-    check p.pop == ("Make tea", 5.0)
-    check p.count == 0
+    check p.add(5) == PriFeedback[int](added: true, evicted: true, evictedElem: 1)
+    check p.count == 3
+
+    check p.add(4) == PriFeedback[int](added: true, evicted: true, evictedElem: 2)
+    check p.count == 3
+
+    check p.add(1) == PriFeedback[int](added: false, evicted: true, evictedElem: 1)
+    check p.count == 3
