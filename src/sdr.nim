@@ -1,4 +1,5 @@
 import bitarray
+import bitops
 import hashes
 import random
 import strutils
@@ -11,7 +12,6 @@ type
     bitarray: BitArray
 
 const SDR_size* = 2048
-const SDR_ones* = 5
 const SDR_blocks = int(SDR_size / (sizeof(BitArrayScalar) * 8))
 const BitArray_header_size = 1
 
@@ -47,14 +47,12 @@ proc minus*(a: SDR, b: SDR): SDR =
   for i in 1..SDR_blocks:
     result.bitarray.bitarray[i] = a.bitarray.bitarray[i] and not b.bitarray.bitarray[i]
 
-
 proc union*(a: SDR, b: SDR): SDR =
   result = newSDR()
   # for i in 0..<SDR_size:
   #   result.writeBit(i, a.readBit(i) or b.readBit(i))
   for i in 1..SDR_blocks:
     result.bitarray.bitarray[i] = a.bitarray.bitarray[i] or b.bitarray.bitarray[i]
-
 
 proc intersection*(a: SDR, b: SDR): SDR =
   result = newSDR()
@@ -148,3 +146,7 @@ proc hash*(sdr: SDR): Hash =
   for i in 0 ..< SDR_blocks:
     h = h !& hash(sdr.bitarray.bitarray[i + BitArray_header_size])
   result = !$h
+
+proc countTrue*(sdr: SDR): int =
+  for i in 0 ..< SDR_blocks:
+    result += countSetBits(sdr.bitarray.bitarray[i + BitArray_header_size])

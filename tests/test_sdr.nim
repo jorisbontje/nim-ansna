@@ -90,3 +90,11 @@ suite "SDR":
     check(sdr2.hash == -8984468311193396829)
     let sdr3 = toSeq(0..<2048).toSDR
     check(sdr3.hash == -1520062087236158065)
+
+  test "countTrue":
+    let sdr0 = [].toSDR
+    check(sdr0.countTrue == 0)
+    let sdr1 = [0].toSDR
+    check(sdr1.countTrue == 1)
+    let sdr3 = [1, 595, 1557].toSDR
+    check(sdr3.countTrue == 3)
