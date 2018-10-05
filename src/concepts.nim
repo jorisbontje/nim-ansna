@@ -14,18 +14,17 @@ type
   Concept* = object
     attention: Attention
     usage: Usage
-    name*: SDR ## name of the concept like in OpenNARS
-    nameHash*: Hash
+    sdr*: SDR
+    sdrHash*: Hash
     eventBeliefs: FIFO
     eventGoals: FIFO
     preconditionBeliefs: seq[Implication]
     postconditionBeliefs: seq[Implication]
 
-proc initConcept*(name: SDR): Concept =
-    result.name = name
+proc initConcept*(sdr: SDR): Concept =
+    result.sdr = sdr
+    result.sdrHash = sdr.hash
     result.eventBeliefs = initFIFO()
     result.eventGoals = initFIFO()
     result.preconditionBeliefs = newSeq[Implication]()
     result.postconditionBeliefs = newSeq[Implication]()
-    # Generate CRC checksum too:
-    result.nameHash = name.hash

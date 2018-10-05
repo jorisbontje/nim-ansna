@@ -1,3 +1,5 @@
+import hashes
+
 import attention
 import sdr
 import truth
@@ -10,7 +12,12 @@ type
   Event* = object
     attention*: Attention
     sdr*: SDR
+    sdrHash*: Hash
     `type`*: EventType
     truth*: Truth
     stamp*: Stamp
     occurrenceTime*: int64
+
+proc initEvent*(sdr: SDR): Event =
+  result.sdr = sdr
+  result.sdrHash = sdr.hash
