@@ -58,14 +58,3 @@ proc pop*[T](q: var PriQueue[T]): PriElem[T] =
   q.buf[n] = q.buf[qn]
   q.buf.setLen(q.buf.len - 1)
   q.count = q.buf.len - 1
-
-when isMainModule:
-  var p = initPriQueue[string]()
-  p.add("Clear drains", 3)
-  p.add("Feed cat", 4)
-  p.add("Make tea", 5)
-  p.add("Solve RC tasks", 1)
-  p.add("Tax return", 2)
-
-  while p.count > 0:
-    echo p.pop()

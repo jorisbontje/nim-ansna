@@ -1,6 +1,7 @@
 test_encoder
 test_fifo
 test_permutation
+test_priorityqueue
 test_sdr
 test_stamp
 test_truth
