@@ -6,6 +6,7 @@ import fifo
 import implication
 import inference
 import memory
+import minmaxheap
 import permutation
 import priorityqueue
 import sdr

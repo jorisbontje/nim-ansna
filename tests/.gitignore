@@ -1,5 +1,6 @@
 test_encoder
 test_fifo
+test_minmaxheap
 test_permutation
 test_priorityqueue
 test_sdr
