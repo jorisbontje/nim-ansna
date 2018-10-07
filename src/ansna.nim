@@ -2,6 +2,7 @@ import options
 
 import concepts
 import encoder
+import event
 import memory
 import sdr
 
@@ -13,13 +14,17 @@ when isMainModule:
 
   var mem = initMemory()
   # first test for concept
-  let conceptAName = encodeTerm("b")
-  let conceptA = initConcept(conceptAName)
-  mem.addConcept(conceptA)
-  echo conceptA
+  let sdrB = encodeTerm("b")
+  let conceptB = initConcept(sdrB)
+  echo conceptB
+  mem.addConcept(conceptB)
 
-  let closest = mem.findClosestConceptByNameExhaustive(conceptAName)
-  echo closest.get()
+  let eventB = initEvent(sdrB)
+  let closestExact = mem.findClosestConceptExhaustive(eventB)
+  echo "closestExact: ", closestExact.get()
+
+  let closestVoting = mem.findClosestConcepByVoting(eventB)
+  echo "closestVoting: ", closestVoting.get()
 
   # numeric encoder test
   let w = 40
