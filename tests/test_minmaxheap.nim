@@ -4,12 +4,12 @@ import minmaxheap
 
 type PriElemInt = tuple[data: string, pri: int]
 
-proc `<`(a, b: PriElemInt): bool =
+func `<`(a, b: PriElemInt): bool =
   result = a.pri < b.pri
 
 type PriElemFloat = tuple[data: string, pri: float]
 
-proc `<`(a, b: PriElemFloat): bool =
+func `<`(a, b: PriElemFloat): bool =
   result = a.pri < b.pri
 
 suite "minmaxheap":
