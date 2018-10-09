@@ -36,10 +36,10 @@ proc addAndRevise*(fifo: var EventFIFO, event: Event): Option[Event] =
         closest = potentialClosest
         closest_i = i
 
-    if checkOverlap(event.stamp, closest.stamp):
-      # overlap happened, we can't revise, so just add the event to FIFO
-      fifo.add(event)
-      return
+  if checkOverlap(event.stamp, closest.stamp):
+    # overlap happened, we can't revise, so just add the event to FIFO
+    fifo.add(event)
+    return
 
   let revised = eventRevision(closest, event)
   if revised.truth.confidence < closest.truth.confidence and revised.truth.confidence < event.truth.confidence:
