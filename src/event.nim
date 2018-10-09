@@ -18,6 +18,6 @@ type
     stamp*: Stamp
     occurrenceTime*: int64
 
-proc initEvent*(sdr: SDR): Event =
+func initEvent*(sdr: SDR): Event =
   result.sdr = sdr
   result.sdrHash = sdr.hash

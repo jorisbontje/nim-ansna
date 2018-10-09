@@ -12,6 +12,6 @@ type
     stamp*: Stamp
     occurrenceTimeOffset*: int64
 
-proc initImplication*(sdr: SDR): Implication =
+func initImplication*(sdr: SDR): Implication =
   result.sdr = sdr
   result.sdrHash = sdr.hash

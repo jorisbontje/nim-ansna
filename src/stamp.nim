@@ -6,14 +6,14 @@ type
   Stamp* = object
     evidentalBase*: array[STAMP_size, int]
 
-proc toEvidentalBase*(expected: openarray[int]): array[STAMP_size, int] =
+func toEvidentalBase*(expected: openarray[int]): array[STAMP_size, int] =
   assert len(expected) <= STAMP_size
   for i, value in expected.pairs:
     result[i] = value
   for i in len(expected)..<STAMP_size:
     result[i] = STAMP_free
 
-proc make*(a: Stamp, b: Stamp): Stamp =
+func make*(a: Stamp, b: Stamp): Stamp =
   var processStamp1 = true
   var processStamp2 = true
   var j = 0
@@ -39,7 +39,7 @@ proc make*(a: Stamp, b: Stamp): Stamp =
     if not processStamp1 and not processStamp2:
       break
 
-proc checkOverlap*(a: Stamp, b: Stamp): bool =
+func checkOverlap*(a: Stamp, b: Stamp): bool =
   # TODO improve by using seq intersection
   for i in 0..<STAMP_size:
     if a.evidentalBase[i] == STAMP_free:

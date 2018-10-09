@@ -12,7 +12,7 @@ type
     evicted*: bool
     evictedElem*: T
 
-proc initPriQueue*[T](maxSize: int): PriQueue[T] =
+func initPriQueue*[T](maxSize: int): PriQueue[T] =
   result.queue = initMinMaxHeap[T]()
   result.maxSize = maxSize
 

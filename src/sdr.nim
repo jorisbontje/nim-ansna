@@ -19,13 +19,13 @@ proc newSDR*(): SDR =
   result = new SDR
   result.bitarray = create_bitarray(SDR_size)
 
-proc readBit*(sdr: SDR, pos: int): bool =
+func readBit*(sdr: SDR, pos: int): bool =
   result = sdr.bitarray[pos]
 
 proc writeBit*(sdr: SDR, pos: int, value: bool): void =
   sdr.bitarray[pos] = value
 
-proc toBits*(sdr: SDR): seq[int] =
+func toBits*(sdr: SDR): seq[int] =
   for i in 0..<SDR_size:
     if sdr.readBit(i):
       result.add(i)
@@ -35,7 +35,7 @@ proc toSDR*(bits: openarray[int]): SDR =
   for i in bits:
     result.writeBit(i, true)
 
-proc `$`*(sdr: SDR): string =
+func `$`*(sdr: SDR): string =
   result.add("[")
   result.add(sdr.toBits.join(","))
   result.add("]")
@@ -118,7 +118,7 @@ proc tupleGetSecondElement*(compound: SDR, firstElement: SDR): SDR =
   let sdrxor = `xor`(aPerm, compound)
   result = permute(sdrxor, permP_inv)
 
-proc match*(part: SDR, full: SDR): Truth =
+func match*(part: SDR, full: SDR): Truth =
   var countOneInBoth = 0
   var generalCaseMisses1Bit = 0
 
@@ -130,13 +130,13 @@ proc match*(part: SDR, full: SDR): Truth =
   let f_total = float(countOneInBoth) / e_total
   result = Truth(frequency: f_total, confidence: w2c(e_total))
 
-proc inheritance*(full: SDR, part: SDR): Truth =
+func inheritance*(full: SDR, part: SDR): Truth =
   result = match(part, full)
 
-proc similarity*(a: SDR, b: SDR): Truth =
+func similarity*(a: SDR, b: SDR): Truth =
   result = intersection(match(a, b), match(b, a))
 
-proc hash*(sdr: SDR): Hash =
+func hash*(sdr: SDR): Hash =
   ### original hashing algorithm:
   # for i in 0 ..< SDR_blocks:
   #   for j in 0 ..< SDR_hash_pieces:
@@ -147,6 +147,6 @@ proc hash*(sdr: SDR): Hash =
     h = h !& hash(sdr.bitarray.bitarray[i + BitArray_header_size])
   result = !$h
 
-proc countTrue*(sdr: SDR): int =
+func countTrue*(sdr: SDR): int =
   for i in 0 ..< SDR_blocks:
     result += countSetBits(sdr.bitarray.bitarray[i + BitArray_header_size])

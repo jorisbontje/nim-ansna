@@ -6,7 +6,7 @@ import truth
 
 const REVISION_MAX_OCCURRENCE_DISTANCE = 100
 
-proc derivationTimeAndTruth(a: Event, b: Event): (int64, Truth, Truth) =
+func derivationTimeAndTruth(a: Event, b: Event): (int64, Truth, Truth) =
     let conclusionTime = (a.occurrenceTime + b.occurrenceTime) div 2
     let truthA = projection(a.truth, a.occurrenceTime, conclusionTime)
     let truthB = projection(b.truth, b.occurrenceTime, conclusionTime)

@@ -9,7 +9,7 @@ proc randomPermutation*(r: var Rand, n: int): Permutation =
     result[i] = i
   shuffle(r, result)
 
-proc inversePermutation*(perm: Permutation): Permutation =
+func inversePermutation*(perm: Permutation): Permutation =
   let n = perm.len
   result = newSeq[int](n)
   for i in 0..<n:

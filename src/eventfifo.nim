@@ -13,7 +13,7 @@ const FIFO_MAX_SIZE = 1000
 type
   EventFIFO* = FIFO[Event]
 
-proc initEventFIFO*(maxSize: int = FIFO_MAX_SIZE): EventFIFO =
+func initEventFIFO*(maxSize: int = FIFO_MAX_SIZE): EventFIFO =
   result = initFIFO[Event](maxSize)
 
 proc addAndRevise*(fifo: var EventFIFO, event: Event): Option[Event] =

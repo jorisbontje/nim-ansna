@@ -6,7 +6,7 @@ type
     queue: seq[T]
     maxSize: int
 
-proc initFIFO*[T](maxSize: int): FIFO[T] =
+func initFIFO*[T](maxSize: int): FIFO[T] =
   result.queue = newSeq[T]()
   result.maxSize = maxSize
 
@@ -20,13 +20,13 @@ proc delete*[T](fifo: var FIFO[T], idx: int): void =
    # O(n)
   fifo.queue.delete(idx)
 
-proc len*[T](fifo: FIFO[T]): int =
+func len*[T](fifo: FIFO[T]): int =
   fifo.queue.len
 
-proc high*[T](fifo: FIFO[T]): int =
+func high*[T](fifo: FIFO[T]): int =
   fifo.queue.high
 
-proc `[]`*[T](fifo: var FIFO[T], idx: int): T =
+func `[]`*[T](fifo: var FIFO[T], idx: int): T =
   fifo.queue[idx]
 
 proc `[]=`*[T](fifo: var FIFO[T], idx: int, val: T): void =

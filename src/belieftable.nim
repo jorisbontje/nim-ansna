@@ -16,7 +16,7 @@ type
     items*: seq[Implication]
     maxSize: int
 
-proc initBeliefTable*(maxSize: int = TABLE_SIZE): BeliefTable =
+func initBeliefTable*(maxSize: int = TABLE_SIZE): BeliefTable =
   result.items = newSeq[Implication]()
   result.maxSize = maxSize
 

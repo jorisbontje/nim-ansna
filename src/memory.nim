@@ -20,7 +20,7 @@ type
     events: PriQueue[Event]
     bitToConcept: Table[int, HashSet[Hash]]
 
-proc initMemory*(): Memory =
+func initMemory*(): Memory =
   result.concepts = initPriQueue[Concept](CONCEPTS_MAX)
   result.events = initPriQueue[Event](EVENTS_MAX)
   result.bitToConcept = initTable[int, HashSet[Hash]]()
@@ -43,12 +43,12 @@ proc addConcept*(memory: var Memory, koncept: Concept): void =
         if i in memory.bitToConcept:
           memory.bitToConcept[i].excl(koncept.sdrHash)
 
-proc findConceptByHash(memory: Memory, sdrHash: Hash): Option[Concept] =
+func findConceptByHash(memory: Memory, sdrHash: Hash): Option[Concept] =
   for koncept in memory.concepts:
       if sdrHash == koncept.sdrHash:
         return some(koncept)
 
-proc findClosestConcepByVoting*(memory: Memory, event: Event): Option[Concept] =
+func findClosestConcepByVoting*(memory: Memory, event: Event): Option[Concept] =
   let exactMatch = memory.findConceptByHash(event.sdrHash)
   if exactMatch.isSome:
     return exactMatch
@@ -64,7 +64,7 @@ proc findClosestConcepByVoting*(memory: Memory, event: Event): Option[Concept] =
 
   result = memory.findConceptByHash(voting.largest[0])
 
-proc findClosestConceptExhaustive*(memory: Memory, event: Event): Option[Concept] =
+func findClosestConceptExhaustive*(memory: Memory, event: Event): Option[Concept] =
   var bestValSoFar = -1.0
   for koncept in memory.concepts.items():
       let curVal = expectation(inheritance(event.sdr, koncept.sdr))

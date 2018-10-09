@@ -21,7 +21,7 @@ type
     preconditionBeliefs*: seq[Implication]
     postconditionBeliefs*: seq[Implication]
 
-proc initConcept*(sdr: SDR): Concept =
+func initConcept*(sdr: SDR): Concept =
     result.sdr = sdr
     result.sdrHash = sdr.hash
     result.eventBeliefs = initEventFIFO()
@@ -29,7 +29,7 @@ proc initConcept*(sdr: SDR): Concept =
     result.preconditionBeliefs = newSeq[Implication]()
     result.postconditionBeliefs = newSeq[Implication]()
 
-proc `<`*(a, b: Concept): bool =
+func `<`*(a, b: Concept): bool {.inline.} =
   result = a.attention.priority < b.attention.priority
-proc `==`*(a, b: Concept): bool =
+func `==`*(a, b: Concept): bool {.inline.} =
   result = a.sdrHash == b.sdrHash
