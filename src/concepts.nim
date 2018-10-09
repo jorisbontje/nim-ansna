@@ -1,7 +1,7 @@
 import hashes
 
 import attention
-import event
+import eventfifo
 import fifo
 import implication
 import sdr
@@ -16,16 +16,16 @@ type
     usage*: Usage
     sdr*: SDR
     sdrHash*: Hash
-    eventBeliefs*: FIFO
-    eventGoals*: FIFO
+    eventBeliefs*: EventFIFO
+    eventGoals*: EventFIFO
     preconditionBeliefs*: seq[Implication]
     postconditionBeliefs*: seq[Implication]
 
 proc initConcept*(sdr: SDR): Concept =
     result.sdr = sdr
     result.sdrHash = sdr.hash
-    result.eventBeliefs = initFIFO()
-    result.eventGoals = initFIFO()
+    result.eventBeliefs = initEventFIFO()
+    result.eventGoals = initEventFIFO()
     result.preconditionBeliefs = newSeq[Implication]()
     result.postconditionBeliefs = newSeq[Implication]()
 

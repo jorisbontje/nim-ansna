@@ -11,7 +11,7 @@ export fifo except initFIFO
 const FIFO_MAX_SIZE = 1000
 
 type
-  EventFIFO = FIFO[Event]
+  EventFIFO* = FIFO[Event]
 
 proc initEventFIFO*(maxSize: int = FIFO_MAX_SIZE): EventFIFO =
   result = initFIFO[Event](maxSize)
