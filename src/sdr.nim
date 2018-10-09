@@ -8,22 +8,21 @@ import permutation
 import truth
 
 type
-  SDR* = ref object
-    bitarray: BitArray
+  SDR* = distinct BitArray
 
 const SDR_size* = 2048
 const SDR_blocks = int(SDR_size / (sizeof(BitArrayScalar) * 8))
 const BitArray_header_size = 1
 
 proc newSDR*(): SDR =
-  result = new SDR
-  result.bitarray = create_bitarray(SDR_size)
+  result = SDR(create_bitarray(SDR_size))
 
-func readBit*(sdr: SDR, pos: int): bool =
-  result = sdr.bitarray[pos]
+func readBit*(sdr: SDR, pos: int): bool {.inline.} =
+  var sdr = sdr # XXX workaround for mutable ref
+  result = BitArray(sdr)[pos]
 
-proc writeBit*(sdr: SDR, pos: int, value: bool): void =
-  sdr.bitarray[pos] = value
+proc writeBit*(sdr: var SDR, pos: int, value: bool): void {.inline.} =
+  BitArray(sdr)[pos] = value
 
 func toBits*(sdr: SDR): seq[int] =
   for i in 0..<SDR_size:
@@ -40,45 +39,35 @@ func `$`*(sdr: SDR): string =
   result.add(sdr.toBits.join(","))
   result.add("]")
 
-proc minus*(a: SDR, b: SDR): SDR =
+proc minus*(a, b: SDR): SDR =
   result = newSDR()
-  # for i in 0..<SDR_size:
-  #   result.writeBit(i, a.readBit(i) and not b.readBit(i))
   for i in 1..SDR_blocks:
-    result.bitarray.bitarray[i] = a.bitarray.bitarray[i] and not b.bitarray.bitarray[i]
+    BitArray(result).bitarray[i] = BitArray(a).bitarray[i] and not BitArray(b).bitarray[i]
 
-proc union*(a: SDR, b: SDR): SDR =
+proc union*(a, b: SDR): SDR =
   result = newSDR()
-  # for i in 0..<SDR_size:
-  #   result.writeBit(i, a.readBit(i) or b.readBit(i))
   for i in 1..SDR_blocks:
-    result.bitarray.bitarray[i] = a.bitarray.bitarray[i] or b.bitarray.bitarray[i]
+    BitArray(result).bitarray[i] = BitArray(a).bitarray[i] or BitArray(b).bitarray[i]
 
-proc intersection*(a: SDR, b: SDR): SDR =
+proc intersection*(a, b: SDR): SDR =
   result = newSDR()
-  # for i in 0..<SDR_size:
-  #   result.writeBit(i, a.readBit(i) and b.readBit(i))
   for i in 1..SDR_blocks:
-    result.bitarray.bitarray[i] = a.bitarray.bitarray[i] and b.bitarray.bitarray[i]
+    BitArray(result).bitarray[i] = BitArray(a).bitarray[i] and BitArray(b).bitarray[i]
 
-proc `xor`*(a: SDR, b: SDR): SDR =
+proc `xor`*(a, b: SDR): SDR =
   result = newSDR()
-  # for i in 0..<SDR_size:
-  #   writeBit(result, i, a.readBit(i) xor b.readBit(i))
   for i in 1..SDR_blocks:
-    result.bitarray.bitarray[i] = a.bitarray.bitarray[i] xor b.bitarray.bitarray[i]
+    BitArray(result).bitarray[i] = BitArray(a).bitarray[i] xor BitArray(b).bitarray[i]
 
-proc swap*(sdr: SDR, bit_i: int, bit_j: int): void =
-  let temp = readBit(sdr, bit_i)
-  sdr.writeBit(bit_i, sdr.readBit(bit_j))
-  sdr.writeBit(bit_j, temp)
+# proc swap*(sdr: var SDR, bit_i: int, bit_j: int): void =
+#   let temp = readBit(sdr, bit_i)
+#   sdr.writeBit(bit_i, sdr.readBit(bit_j))
+#   sdr.writeBit(bit_j, temp)
 
 proc copy*(sdr: SDR): SDR =
   result = newSDR()
-  # for i in 0..<SDR_size:
-  #   writeBit(result, i, sdr.readBit(i))
   for i in 1..SDR_blocks:
-    result.bitarray.bitarray[i] = sdr.bitarray.bitarray[i]
+    BitArray(result).bitarray[i] = BitArray(sdr).bitarray[i]
 
 proc permuteByRotation*(sdr: SDR, forward: bool): SDR =
   # XXX unoptimized
@@ -96,29 +85,30 @@ let permS_inv* = inversePermutation(permS)
 let permP* = randomPermutation(rnd, SDR_size)
 let permP_inv* = inversePermutation(permP)
 
-proc set*(a: SDR, b: SDR): SDR =
+proc set*(a, b: SDR): SDR =
   result = union(a, b)
 
 proc permute*(a: SDR, perm: Permutation): SDR =
-  # XXX unoptimized
   result = newSDR()
   for i in 0..<SDR_size:
     result.writeBit(i, a.readBit(perm[i]))
 
-proc `tuple`*(a: SDR, b: SDR): SDR =
-  result = `xor`(permute(a, permS), permute(b, permP))
+proc `tuple`*(a, b: SDR): SDR =
+  var aPerm = permute(a, permS)
+  var bPerm = permute(b, permP)
+  result = `xor`(aPerm, bPerm)
 
-proc tupleGetFirstElement*(compound: SDR, secondElement: SDR): SDR =
-  let bPerm = permute(secondElement, permP)
-  let sdrxor = `xor`(bperm, compound)
+proc tupleGetFirstElement*(compound, secondElement: SDR): SDR =
+  var bPerm = permute(secondElement, permP)
+  var sdrxor = `xor`(bperm, compound)
   result = permute(sdrxor, permS_inv)
 
-proc tupleGetSecondElement*(compound: SDR, firstElement: SDR): SDR =
-  let aPerm = permute(firstElement, permS)
-  let sdrxor = `xor`(aPerm, compound)
+proc tupleGetSecondElement*(compound, firstElement: SDR): SDR =
+  var aPerm = permute(firstElement, permS)
+  var sdrxor = `xor`(aPerm, compound)
   result = permute(sdrxor, permP_inv)
 
-func match*(part: SDR, full: SDR): Truth =
+func match*(part, full: SDR): Truth =
   var countOneInBoth = 0
   var generalCaseMisses1Bit = 0
 
@@ -130,23 +120,18 @@ func match*(part: SDR, full: SDR): Truth =
   let f_total = float(countOneInBoth) / e_total
   result = Truth(frequency: f_total, confidence: w2c(e_total))
 
-func inheritance*(full: SDR, part: SDR): Truth =
+func inheritance*(full, part: SDR): Truth =
   result = match(part, full)
 
-func similarity*(a: SDR, b: SDR): Truth =
+func similarity*(a, b: SDR): Truth =
   result = intersection(match(a, b), match(b, a))
 
 func hash*(sdr: SDR): Hash =
-  ### original hashing algorithm:
-  # for i in 0 ..< SDR_blocks:
-  #   for j in 0 ..< SDR_hash_pieces:
-  #     let shift_right = j * 8 * sizeof(SDR_hash)
-  #     result = result or (sdr.bitarray.bitarray[i + BitArray_header_size] shr shift_right)
   var h: Hash = 0
   for i in 0 ..< SDR_blocks:
-    h = h !& hash(sdr.bitarray.bitarray[i + BitArray_header_size])
+    h = h !& hash(BitArray(sdr).bitarray[i + BitArray_header_size])
   result = !$h
 
 func countTrue*(sdr: SDR): int =
   for i in 0 ..< SDR_blocks:
-    result += countSetBits(sdr.bitarray.bitarray[i + BitArray_header_size])
+    result += countSetBits(BitArray(sdr).bitarray[i + BitArray_header_size])
