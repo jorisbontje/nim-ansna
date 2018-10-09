@@ -2,6 +2,7 @@ import attention
 import concepts
 import encoder
 import event
+import eventfifo
 import fifo
 import implication
 import inference

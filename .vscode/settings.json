@@ -2,6 +2,7 @@
     "editor.tabSize": 2,
     "files.trimTrailingWhitespace": true,
     "nim.project": [
+        "src/ansna.nim",
         "src/project.nim"
     ],
     "editor.formatOnPaste": true,

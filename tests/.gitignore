@@ -1,4 +1,5 @@
 test_encoder
+test_eventfifo
 test_fifo
 test_minmaxheap
 test_permutation
