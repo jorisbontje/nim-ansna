@@ -19,7 +19,7 @@ func initEventFIFO*(maxSize: int = FIFO_MAX_SIZE): EventFIFO =
 proc addAndRevise*(fifo: var EventFIFO, event: Event): Option[Event] =
   ## Add an event to the FIFO with potential revision,
   ## return revised element if revision worked, else none
-  ## also see https://github.com/patham9/ANSNA/wiki/Event-Revisio
+  ## also see https://github.com/patham9/ANSNA/wiki/Event-Revision
 
   var closest: Event
   var closest_i = -1
