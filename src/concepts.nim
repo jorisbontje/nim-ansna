@@ -1,6 +1,7 @@
 import hashes
 
 import attention
+import belieftable
 import eventfifo
 import fifo
 import implication
@@ -18,16 +19,16 @@ type
     sdrHash*: Hash
     eventBeliefs*: EventFIFO
     eventGoals*: EventFIFO
-    preconditionBeliefs*: seq[Implication]
-    postconditionBeliefs*: seq[Implication]
+    preconditionBeliefs*: BeliefTable
+    postconditionBeliefs*: BeliefTable
 
 func initConcept*(sdr: SDR): Concept =
     result.sdr = sdr
     result.sdrHash = sdr.hash
     result.eventBeliefs = initEventFIFO()
     result.eventGoals = initEventFIFO()
-    result.preconditionBeliefs = newSeq[Implication]()
-    result.postconditionBeliefs = newSeq[Implication]()
+    result.preconditionBeliefs = initBeliefTable()
+    result.postconditionBeliefs = initBeliefTable()
 
 func `<`*(a, b: Concept): bool {.inline.} =
   result = a.attention.priority < b.attention.priority
