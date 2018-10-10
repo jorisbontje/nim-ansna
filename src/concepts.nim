@@ -8,9 +8,6 @@ import implication
 import sdr
 import usage
 
-const PRECONDITION_BELIEFS_MAX = 512
-const POSTCONDITION_BELIEFS_MAX = 512
-
 type
   Concept* = object
     attention*: Attention
