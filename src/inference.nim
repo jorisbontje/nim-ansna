@@ -4,7 +4,7 @@ import sdr
 import stamp
 import truth
 
-const REVISION_MAX_OCCURRENCE_DISTANCE = 100
+const ASSUMPTION_OF_FAILURE_CONFIDENCE = 0.05
 
 func derivationTimeAndTruth(a: Event, b: Event): (int64, Truth, Truth) =
     let conclusionTime = (a.occurrenceTime + b.occurrenceTime) div 2
@@ -35,9 +35,6 @@ proc beliefInduction*(a: Event, b: Event): Implication =
 # {Event a!, Event a!} |- Event a!
 proc eventRevision*(a: Event, b: Event): Event =
     let (conclusionTime, truthA, truthB) = derivationTimeAndTruth(a, b)
-
-    if abs(a.occurrenceTime - b.occurrenceTime) > REVISION_MAX_OCCURRENCE_DISTANCE:
-        return Event() # XXX need other type
 
     result = Event(sdr: intersection(a.sdr, b.sdr),
                    type: a.type,
@@ -83,3 +80,8 @@ proc goalAbduction*(component: Event, compound: Implication): Event =
                    truth: abduction(compound.truth, component.truth),
                    stamp: make(component.stamp, compound.stamp),
                    occurrenceTime: component.occurrenceTime + compound.occurrenceTimeOffset)
+
+proc assumptionOfFailure*(compound: Implication): Implication =
+    result = compound
+    result.truth = revision(compound.truth, Truth(frequency: 0.0,
+                                                  confidence: ASSUMPTION_OF_FAILURE_CONFIDENCE))
