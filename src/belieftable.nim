@@ -23,13 +23,20 @@ func initBeliefTable*(maxSize: int = TABLE_SIZE): BeliefTable =
 proc add*(table: var BeliefTable, imp: Implication): void =
   let impTruthExp = expectation(imp.truth)
 
+  var inserted = false
   for idx, val in table.items.pairs:
     if impTruthExp > expectation(val.truth):
       table.items.insert(imp, idx)
-      if table.items.len > table.maxSize:
-        # evict last item if full
-        table.items.del(table.items.high)
-      return
+      inserted = true
+      break
+
+  if not inserted:
+    table.items.add(imp)
+
+  if table.items.len > table.maxSize:
+    # evict last item if full
+    table.items.del(table.items.high)
+
 
 func findClosest(table: BeliefTable, imp: Implication): Option[Implication] =
   var bestExpectation = 0.0
@@ -51,3 +58,6 @@ proc addAndRevise*(table: var BeliefTable, imp: Implication): void =
 
   # 3. add imp too:
   table.add(imp);
+
+func `[]`*(table: BeliefTable, idx: int): Implication =
+  table.items[idx]
