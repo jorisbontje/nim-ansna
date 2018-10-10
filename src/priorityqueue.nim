@@ -17,14 +17,17 @@ func initPriQueue*[T](maxSize: int): PriQueue[T] =
   result.maxSize = maxSize
 
 proc add*[T](q: var PriQueue[T], elem: T): PriFeedback[T] =
-  q.queue.push(elem)
-  result.added = true
+  # first evict if necessary
+  if q.queue.count >= q.maxSize:
+    if elem < q.queue.min:
+        #smaller than smallest
+        return
 
-  if q.queue.count > q.maxSize:
     result.evicted = true
     result.evictedElem = q.queue.popMin()
-    if result.evictedElem == elem:
-      result.added = false
+
+  q.queue.push(elem)
+  result.added = true
 
 proc pop*[T](q: var PriQueue[T]): T =
   result = q.queue.popMax()

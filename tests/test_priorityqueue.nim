@@ -18,5 +18,5 @@ suite "priorityqueue":
     check p.add(4) == PriFeedback[int](added: true, evicted: true, evictedElem: 2)
     check p.count == 3
 
-    check p.add(1) == PriFeedback[int](added: false, evicted: true, evictedElem: 1)
+    check p.add(1) == PriFeedback[int](added: false, evicted: false)
     check p.count == 3
