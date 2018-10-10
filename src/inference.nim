@@ -81,6 +81,7 @@ proc goalAbduction*(component: Event, compound: Implication): Event =
                    stamp: make(component.stamp, compound.stamp),
                    occurrenceTime: component.occurrenceTime + compound.occurrenceTimeOffset)
 
+# When an implication is used for inference.beliefDeduction, it receives a little bit of negative evidence
 proc assumptionOfFailure*(compound: Implication): Implication =
     result = compound
     result.truth = revision(compound.truth, Truth(frequency: 0.0,
