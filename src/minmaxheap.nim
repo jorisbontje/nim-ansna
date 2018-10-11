@@ -146,3 +146,7 @@ proc rebuild*[T](q: var MinMaxHeap[T]): void =
   # just reinsert all elements, (no push back necessary, of course)
   for i in 0..<q.buf.len:
     q.bubbleUp(i)
+
+proc replace*[T](q: var MinMaxHeap[T], i: int, elem: T): void =
+  q.buf[i] = elem
+  q.bubbleUp(i)

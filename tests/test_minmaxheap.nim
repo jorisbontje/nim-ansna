@@ -74,3 +74,30 @@ suite "minmaxheap":
     check p.popMin == ("Clear drains", 3.0)
     check p.popMin == ("Tax return", 4.0)
     check p.popMin == ("Solve RC tasks", 5.0)
+
+  test "replace":
+
+    var p = initMinMaxHeap[PriElemInt]()
+
+    p.push(("Solve RC tasks", 5))
+    p.push(("Clear drains", 3))
+    p.push(("Feed cat", 2))
+    p.push(("Make tea", 1))
+    p.push(("Tax return", 4))
+
+    # (buf: @[
+    #  (data: "Make tea", pri: 1),
+    #  (data: "Solve RC tasks", pri: 5),
+    #  (data: "Clear drains", pri: 3),
+    #  (data: "Feed cat", pri: 2),
+    #  (data: "Tax return", pri: 4)])
+    # echo p
+
+    p.replace(4, ("XXX", 0))
+
+    check p.popMin == ("XXX", 0)
+    check p.popMin == ("Make tea", 1)
+    check p.popMin == ("Feed cat", 2)
+    check p.popMin == ("Clear drains", 3)
+    # check p.popMin == ("Tax return", 4)
+    check p.popMin == ("Solve RC tasks", 5)
