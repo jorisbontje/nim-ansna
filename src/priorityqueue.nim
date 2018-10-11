@@ -32,6 +32,9 @@ proc add*[T](q: var PriQueue[T], elem: T): PriFeedback[T] =
 proc pop*[T](q: var PriQueue[T]): T =
   result = q.queue.popMax()
 
+proc replace*[T](q: var PriQueue[T], i: int, elem: T): void =
+  q.queue.replace(i, elem)
+
 func count*[T](q: var PriQueue[T]): int =
   result = q.queue.buf.len
 
