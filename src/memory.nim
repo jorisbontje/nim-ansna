@@ -9,15 +9,13 @@ import priorityqueue
 import sdr
 import truth
 
-# TODO update with patham9
-
 const CONCEPTS_MAX = 10000
 const EVENTS_MAX = 64
 
 type
-  Memory = object
-    concepts: PriQueue[Concept]
-    events: PriQueue[Event]
+  Memory* = object
+    concepts*: PriQueue[Concept]
+    events*: PriQueue[Event]
     bitToConcept: Table[int, HashSet[Hash]]
 
 func initMemory*(): Memory =

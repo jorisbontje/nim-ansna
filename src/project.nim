@@ -1,6 +1,7 @@
 import attention
 import belieftable
 import concepts
+import cycle
 import encoder
 import event
 import eventfifo

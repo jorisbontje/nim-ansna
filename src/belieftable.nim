@@ -59,5 +59,11 @@ proc addAndRevise*(table: var BeliefTable, imp: Implication): void =
   # 3. add imp too:
   table.add(imp);
 
+func len*(table: BeliefTable): int =
+  table.items.len
+
 func `[]`*(table: BeliefTable, idx: int): Implication =
   table.items[idx]
+
+func `[]=`*(table: var BeliefTable, idx: int, val: Implication): void =
+  table.items[idx] = val

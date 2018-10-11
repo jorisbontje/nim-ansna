@@ -32,6 +32,9 @@ func `[]`*[T](fifo: var FIFO[T], idx: int): T =
 proc `[]=`*[T](fifo: var FIFO[T], idx: int, val: T): void =
   fifo.queue[idx] = val
 
+func head*[T](fifo: FIFO[T]): T =
+  fifo.queue[0]
+
 iterator pairs*[T](fifo: FIFO[T]): (int, T) =
   for key, val in fifo.queue.pairs:
     yield (key, val)

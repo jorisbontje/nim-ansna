@@ -29,5 +29,6 @@ func initConcept*(sdr: SDR): Concept =
 
 func `<`*(a, b: Concept): bool {.inline.} =
   result = a.attention.priority < b.attention.priority
+
 func `==`*(a, b: Concept): bool {.inline.} =
   result = a.sdrHash == b.sdrHash

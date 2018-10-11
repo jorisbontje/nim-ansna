@@ -21,3 +21,9 @@ type
 func initEvent*(sdr: SDR): Event =
   result.sdr = sdr
   result.sdrHash = sdr.hash
+
+func `<`*(a, b: Event): bool {.inline.} =
+  result = a.attention.priority < b.attention.priority
+
+func `==`*(a, b: Event): bool {.inline.} =
+  result = a.sdrHash == b.sdrHash

@@ -38,3 +38,17 @@ func count*[T](q: var PriQueue[T]): int =
 iterator items*[T](q: PriQueue[T]): T =
   for i in q.queue.buf.items():
     yield i
+
+iterator mitems*[T](q: var PriQueue[T]): var T =
+  for i in q.queue.buf.mitems():
+    yield i
+
+iterator pairs*[T](q: PriQueue[T]): tuple[key: int, val: T] =
+  for key, val in q.queue.buf.pairs():
+    yield (key, val)
+
+func `[]`*[T](q: PriQueue[T], idx: int): T =
+  q.queue.buf[idx]
+
+proc `[]=`*[T](q: var PriQueue[T], idx: int, val: T): void =
+  q.queue.buf[idx] = val
