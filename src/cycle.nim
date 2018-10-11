@@ -11,57 +11,59 @@ import inference
 import implication
 import memory
 import priorityqueue
+import sdr
 import stamp
+import truth
 
 const EVENT_SELECTIONS = 10
 
 # for temporal induction
 const CONCEPT_SELECTIONS = 10
 
-var currentTime = 0
+var currentTime* = 0
 
-proc composition(B, A: var Concept, b: Event): void =
+proc composition(mem: var Memory, B, A: var Concept, b: Event): void =
   # temporal induction and intersection
-  if A.eventBeliefs.len > 0:
+  if b.type == EventType.Belief and A.eventBeliefs.len > 0:
     let a = A.eventBeliefs.head  # most recent, highest revised
     # XXX dont need to test for: a.type != EventType.Deleted
+    # https://github.com/patham9/ANSNA/issues/29
     if not checkOverlap(a.stamp, b.stamp):
-      let result = beliefInduction(a, b)
-      B.preconditionBeliefs.addAndRevise(result)
-      A.postconditionBeliefs.addAndRevise(result)
+      let implication = beliefInduction(a, b)
+      B.preconditionBeliefs.addAndRevise(implication)
+      A.postconditionBeliefs.addAndRevise(implication)
+      let sequence = if b.occurrenceTime > a.occurrenceTime:
+                       beliefIntersection(a, b)
+                     else:
+                       beliefIntersection(b, a)
+      discard mem.events.add(sequence)
 
 proc decomposition(mem: var Memory, c: var Concept, e: Event): void =
   # detachment
-  if e.type == EventType.Belief:
-    if c.postconditionBeliefs.len > 0:
-      let postcon = c.postconditionBeliefs[0]
-      if not checkOverlap(e.stamp, postcon.stamp):
-        var res = beliefDeduction(e, postcon)
-        res.attention = deriveEvent(c.attention, postcon.truth)
-        c.postconditionBeliefs[0] = assumptionOfFailure(postcon) # TODO do better
-        discard mem.events.add(res)
+  if c.postconditionBeliefs.len > 0:
+    let postcon = c.postconditionBeliefs[0]
+    if not checkOverlap(e.stamp, postcon.stamp):
+      var res = if e.type == EventType.Belief:
+          beliefDeduction(e, postcon)
+        else:
+          goalAbduction(e, postcon)
+      res.attention = deriveEvent(c.attention, postcon.truth)
+      discard mem.events.add(res)
 
-    if c.preconditionBeliefs.len > 0:
-      let precon = c.preconditionBeliefs[0]
-      if not checkOverlap(e.stamp, precon.stamp):
-        var res = beliefAbduction(e, precon)
-        res.attention = deriveEvent(c.attention, precon.truth)
-        discard mem.events.add(res)
+      # add negative evidence to the used predictive hypothesis (assumption of failure, for extinction)
+      discard c.postconditionBeliefs.popHighestTruthExpectationElement()
+      let updated = assumptionOfFailure(postcon)
+      c.postconditionBeliefs.add(updated)
 
-    elif e.type == EventType.Goal:
-      if c.postconditionBeliefs.len > 0:
-        let postcon = c.postconditionBeliefs[0]
-        if not checkOverlap(e.stamp, postcon.stamp):
-          var res = goalAbduction(e, postcon)
-          res.attention = deriveEvent(c.attention, postcon.truth)
-          discard mem.events.add(res)
-
-      if c.precondition_beliefs.len > 0:
-        let precon = c.precondition_beliefs[0]
-        if not checkOverlap(e.stamp, precon.stamp):
-          var res = goalDeduction(e, precon)
-          res.attention = deriveEvent(c.attention, precon.truth)
-          discard mem.events.add(res)
+  if c.preconditionBeliefs.len > 0:
+    let precon = c.preconditionBeliefs[0]
+    if not checkOverlap(e.stamp, precon.stamp):
+      var res = if e.type == EventType.Belief:
+          beliefAbduction(e, precon)
+        else:
+          goalDeduction(e, precon)
+      res.attention = deriveEvent(c.attention, precon.truth)
+      discard mem.events.add(res)
 
 proc cycle*(mem: var Memory): void =
   ## Apply one inference cyle
@@ -74,12 +76,16 @@ proc cycle*(mem: var Memory): void =
     if closest_concept.isNone:
       continue
 
-    var c = closest_concept.get
+    var (c_idx, c) = closest_concept.get
+
+    let matchTruth = inheritance(e.sdr, c.sdr)
+    var eMatch = e
+    eMatch.truth = revision(e.truth, matchTruth)
     # apply decomposition-based inference: prediction/explanation
-    decomposition(mem, c, e)
+    decomposition(mem, c, eMatch)
     # add event to the FIFO of the concept
     var fifo = if e.type == EventType.Belief: c.event_beliefs else: c.event_goals
-    let revised = fifo.addAndRevise(e)
+    let revised = fifo.addAndRevise(eMatch)
     if revised.isSome:
         discard mem.events.add(revised.get)
 
@@ -90,17 +96,14 @@ proc cycle*(mem: var Memory): void =
     # trigger composition-based inference hypothesis formation
     for j in 0 ..< CONCEPT_SELECTIONS:
         var d = mem.concepts.pop
-        composition(c, d, e)  # deriving a =/> b
+        composition(mem, c, d, eMatch)  # deriving a =/> b
 
     # activate concepts attention with the event's attention
     c.attention = activateConcept(c.attention, e.attention)
-    # TODO PriorityQueue_bubbleUp(&concepts, closest_concept_i); # priority was increased
-    # XXX mem.concepts.bubbleUp(closest_concept_i)  # priority was increased
+    mem.concepts.replace(c_idx, c)  # priority was increased
 
     # add a new concept for e too at the end, just before it needs to be identified with something existing
-    # TODO review
-    var koncept = initConcept(e.sdr)
-    koncept.attention = activateConcept(c.attention, e.attention)
+    let koncept = initConcept(e.sdr, attention=activateConcept(c.attention, e.attention))
     mem.addConcept(koncept)
 
   # relative forget concepts:
@@ -110,4 +113,3 @@ proc cycle*(mem: var Memory): void =
     koncept.attention = forgetConcept(koncept.attention, koncept.usage, currentTime)
 
   currentTime += 1
-

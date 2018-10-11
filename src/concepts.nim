@@ -19,9 +19,10 @@ type
     preconditionBeliefs*: BeliefTable
     postconditionBeliefs*: BeliefTable
 
-func initConcept*(sdr: SDR): Concept =
+func initConcept*(sdr: SDR, attention=Attention()): Concept =
     result.sdr = sdr
     result.sdrHash = sdr.hash
+    result.attention = attention
     result.eventBeliefs = initEventFIFO()
     result.eventGoals = initEventFIFO()
     result.preconditionBeliefs = initBeliefTable()

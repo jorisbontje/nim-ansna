@@ -59,6 +59,10 @@ proc addAndRevise*(table: var BeliefTable, imp: Implication): void =
   # 3. add imp too:
   table.add(imp);
 
+proc popHighestTruthExpectationElement*(table: var BeliefTable): Implication =
+    result = table.items[0]
+    table.items.delete(0)
+
 func len*(table: BeliefTable): int =
   table.items.len
 

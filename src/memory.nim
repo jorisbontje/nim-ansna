@@ -17,6 +17,7 @@ type
     concepts*: PriQueue[Concept]
     events*: PriQueue[Event]
     bitToConcept: Table[int, HashSet[Hash]]
+  ConceptLocation* = tuple[idx: int, val: Concept]
 
 func initMemory*(): Memory =
   result.concepts = initPriQueue[Concept](CONCEPTS_MAX)
@@ -41,12 +42,12 @@ proc addConcept*(memory: var Memory, koncept: Concept): void =
         if i in memory.bitToConcept:
           memory.bitToConcept[i].excl(koncept.sdrHash)
 
-func findConceptByHash(memory: Memory, sdrHash: Hash): Option[Concept] =
-  for koncept in memory.concepts:
+func findConceptByHash(memory: Memory, sdrHash: Hash): Option[ConceptLocation] =
+  for idx, koncept in memory.concepts.pairs:
       if sdrHash == koncept.sdrHash:
-        return some(koncept)
+        return some((idx, koncept))
 
-func findClosestConcepByVoting*(memory: Memory, event: Event): Option[Concept] =
+func findClosestConcepByVoting*(memory: Memory, event: Event): Option[ConceptLocation] =
   let exactMatch = memory.findConceptByHash(event.sdrHash)
   if exactMatch.isSome:
     return exactMatch
@@ -58,7 +59,7 @@ func findClosestConcepByVoting*(memory: Memory, event: Event): Option[Concept] =
         voting.inc(conceptSdrHash)
 
   if voting.len == 0:
-    return none(Concept)
+    return none(ConceptLocation)
 
   result = memory.findConceptByHash(voting.largest[0])
 
